@@ -70,4 +70,9 @@ Much trial and error in tuning the variables for the timestep length and elapsed
 
 In main.cpp, lines 104 to 111 deal with setting and preprocessing the MPC with the given waypoints while in lines 119-126, the polynomial coefficients are found after polynomial fitting. The `steering_value` and `throttle` are found and help with the drawing of the reference trajectory of the car.
 
-Lastly, the latency issue is dealt with in lines 187 to 188 of main.cpp. The thread sleeps 100ms as a way to combat latency.
+Lastly, the latency issue is dealt with in lines 123 to 134 of main.cpp, which takes two steps because the vehicle is updated after polynomial fitting. In line 123, the line `auto coeffs = polyfit(waypoints_x_eig, waypoints_y_eig, 3);` performs the polynomial fitting and in lines 127 and  128, `cte` and `epsi` are calculated using the simplified equations:
+```
+cte  = polyeval(coeffs,0); // px = py  = 0
+epsi = -atan(coeffs[1]);   // px = psi = 0
+```
+After polynomial fitting and updating `cte` and `epsi`, the new updated variables `v`, `cte`, and `epsi` are fed into the state vector, `state`, which is finally fed into the `MPC` solver in line 132 to give the new steering angle and throttle in lines 133 and 134.

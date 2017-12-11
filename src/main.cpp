@@ -118,9 +118,17 @@ int main() {
           double steer_value    = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
 
+
+          // Update vehicle AFTER polynomial fitting
           auto coeffs = polyfit(waypoints_x_eig, waypoints_y_eig, 3);
           Eigen::VectorXd state(6);
-          state << 0, 0, 0, v, polyeval(coeffs, 0), -atan(coeffs[1]);
+
+          // Take into account latency
+          double cte = polyeval(coeffs,0);
+          double epsi = -atan(coeffs[1]);
+
+          // px = py = psi = 0 initially
+          state << 0, 0, 0, v, cte, epsi;
           auto vars      = mpc.Solve(state, coeffs);
           steer_value    = vars[0];
           throttle_value = vars[1];

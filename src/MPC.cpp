@@ -48,9 +48,12 @@ class FG_eval {
     // Any additions to the cost should be added to `fg[0]`.
     fg[0] = 0;
 
+   
+
     // Reference State Cost
     // TODO: Define the cost related the reference state and
     // any anything you think may be beneficial.
+
     for (int i = 0; i < N; i++) {
       fg[0] += 2000*CppAD::pow(vars[cte_start  + i], 2);
       fg[0] += 2000*CppAD::pow(vars[epsi_start + i], 2);
@@ -101,9 +104,7 @@ class FG_eval {
       AD<double> epsi0 = vars[epsi_start  + t - 1];
       AD<double> a     = vars[a_start     + t - 1];
       AD<double> delta = vars[delta_start + t - 1];
-      AD<double> f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * CppAD::pow(x0, 2) + coeffs[3] * CppAD::pow(x0, 3);
-      AD<double> psides0 = CppAD::atan(coeffs[1] + 2 * coeffs[2] * x0 + 3 * coeffs[3] * CppAD::pow(x0, 2));
-
+      
       if (t > 1) {
         a     = vars[a_start     + t - 2];
         delta = vars[delta_start + t - 2];
@@ -115,13 +116,16 @@ class FG_eval {
       // This is also CppAD can compute derivatives and pass
       // these to the solver.
 
-      // TODO: Setup the rest of the model constraints
+      AD<double> f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * CppAD::pow(x0, 2) + coeffs[3] * CppAD::pow(x0, 3);
+      AD<double> psides0 = CppAD::atan(coeffs[1] + 2 * coeffs[2] * x0 + 3 * coeffs[3] * CppAD::pow(x0, 2));
+
       fg[x_start    + t + 1] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[y_start    + t + 1] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
       fg[psi_start  + t + 1] = psi1 - (psi0 - v0/Lf * delta * dt);
       fg[v_start    + t + 1] = v1 - (v0 + a * dt);
       fg[cte_start  + t + 1] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
       fg[epsi_start + t + 1] = epsi1 - ((psi0 - psides0) - v0/Lf * delta * dt);
+      
     }
   }
 };
