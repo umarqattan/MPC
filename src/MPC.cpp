@@ -6,7 +6,8 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 20;
+// decreased the time step length by 10 and the car moves more smoothly
+size_t N = 10;
 double dt = 0.1;
 
 // This value assumes the model presented in the classroom is used.
@@ -55,19 +56,21 @@ class FG_eval {
     // any anything you think may be beneficial.
 
     for (int i = 0; i < N; i++) {
-      fg[0] += 2000*CppAD::pow(vars[cte_start  + i], 2);
-      fg[0] += 2000*CppAD::pow(vars[epsi_start + i], 2);
+      // Lowered the penalty for cross track error for more stabilitty
+      fg[0] += 1000*CppAD::pow(vars[cte_start  + i], 2);
+      // Increase the penality for orientation error for more stabliity
+      fg[0] += 3000*CppAD::pow(vars[epsi_start + i], 2);
       fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
     }
 
     for (int i = 0; i < N - 1; i++) {
       fg[0] += 10*CppAD::pow(vars[delta_start + i], 2);
       fg[0] += 10*CppAD::pow(vars[a_start + i], 2);
-      fg[0] += 500*CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
+      fg[0] += 750*CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
     }
 
     for (int i = 0; i < N - 2; i++) {
-      fg[0] += 100*CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+      fg[0] += 150*CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
       fg[0] += 10*CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
     }
 

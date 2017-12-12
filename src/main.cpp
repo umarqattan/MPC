@@ -17,6 +17,16 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
+
+double waypoints_transform(string s, double ptsxi, double ptsyi, double px, double py, double psi) {
+  double dx = ptsxi - px;
+  double dy = ptsyi - py;
+  if (s == "x") {
+    return dx * cos(-psi) - dy * sin(-psi);
+  } else {
+    return dx * sin(-psi) + dy * cos(-psi);
+  }
+}
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
 // else the empty string "" will be returned.
@@ -65,6 +75,8 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
   return result;
 }
 
+
+
 int main() {
   uWS::Hub h;
 
@@ -102,10 +114,8 @@ int main() {
           vector<double> waypoints_y;
 
           for (int i = 0; i < ptsx.size(); i++) {
-            double dx = ptsx[i] - px;
-            double dy = ptsy[i] - py;
-            double waypoints_x_map = dx * cos(-psi) - dy * sin(-psi);
-            double waypoints_y_map = dx * sin(-psi) + dy * cos(-psi);
+            double waypoints_x_map = waypoints_transform("x", ptsx[i], ptsy[i], px, py, psi);
+            double waypoints_y_map = waypoints_transform("y", ptsx[i], ptsy[i], px, py, psi);
             waypoints_x.push_back(waypoints_x_map);
             waypoints_y.push_back(waypoints_y_map);
           }
@@ -203,6 +213,7 @@ int main() {
     }
   });
 
+
   // We don't need this since we're not using HTTP but if it's removed the
   // program
   // doesn't compile :-(
@@ -236,3 +247,4 @@ int main() {
   }
   h.run();
 }
+

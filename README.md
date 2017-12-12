@@ -75,4 +75,4 @@ Lastly, the latency issue is dealt with in lines 123 to 134 of main.cpp, which t
 cte  = polyeval(coeffs,0); // px = py  = 0
 epsi = -atan(coeffs[1]);   // px = psi = 0
 ```
-After polynomial fitting and updating `cte` and `epsi`, the new updated variables `v`, `cte`, and `epsi` are fed into the state vector, `state`, which is finally fed into the `MPC` solver in line 132 to give the new steering angle and throttle in lines 133 and 134.
+After polynomial fitting and updating `cte` and `epsi`, the new updated variables `v`, `cte`, and `epsi` are fed into the state vector, `state`, which is finally fed into the `MPC` solver in line 132 to give the new steering angle and throttle in lines 133 and 134. The car moved in a more stable manner and followed the predicted path much more smoothly after adding a greater penality to the orientation error and decreasing the cross-track error penality. This was accounted for in lines 59 to 62.
